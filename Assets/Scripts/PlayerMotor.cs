@@ -18,24 +18,28 @@ public class PlayerMotor : MonoBehaviour
     {
         isGrounded = controller.isGrounded;
     }
+    public void MovProcess(Vector2 input, bool isSprinting)
+{
+    float moveSpeed = isSprinting ? speed * 1.5f : speed;
 
-    public void MovProcess(Vector2 input)
+    // Create movement vector
+    Vector3 moveDirection = transform.right * input.x + transform.forward * input.y;
+    Vector3 velocity = moveDirection * moveSpeed;
+
+    // Apply gravity
+    playerVelocity.y += gravity * Time.deltaTime;
+
+    if (isGrounded && playerVelocity.y < 0)
     {
-        Vector3 moveDirection = Vector3.zero;
-
-        moveDirection.x = input.x;
-        moveDirection.z = input.y;
-        controller.Move(transform.TransformDirection(moveDirection) * speed * Time.deltaTime);
-        playerVelocity.y += gravity * Time.deltaTime;
-
-        if (isGrounded && playerVelocity.y < 0)
-        {
-            playerVelocity.y = -1.5f;
-        }
-
-        controller.Move(playerVelocity * Time.deltaTime);
+        playerVelocity.y = -1.5f;
     }
 
+    // Combine horizontal and vertical movement
+    velocity.y = playerVelocity.y;
+
+    // Move player
+    controller.Move(velocity * Time.deltaTime);
+}
     public void Jump()
     {
         if(isGrounded)

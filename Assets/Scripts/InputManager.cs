@@ -11,6 +11,7 @@ public class InputManager : MonoBehaviour
 
     private PlayerMotor motor;
     private PlayerCam look;
+    private bool isSprinting = false;
     void Awake()
     {
         playerInput = new PlayerInput();
@@ -19,11 +20,15 @@ public class InputManager : MonoBehaviour
         look = GetComponent<PlayerCam>();
         Cursor.lockState = CursorLockMode.Locked;
         onFoot.Jump.performed += ctx => motor.Jump();
+        onFoot.Sprint.started += ctx => isSprinting = true;
+        onFoot.Sprint.canceled += ctx => isSprinting = false;
     }
 
     void FixedUpdate()
     {
-        motor.MovProcess(onFoot.Movement.ReadValue<Vector2>());
+        motor.MovProcess(onFoot.Movement.ReadValue<Vector2>(), isSprinting);
+        Debug.Log("Sprinting: " + isSprinting);
+
     }
 
     void LateUpdate()
