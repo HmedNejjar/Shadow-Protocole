@@ -1,72 +1,70 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class HealthUpdate : MonoBehaviour
 {
+    [Header("Health Bar References")]
     public Image FrontHealth;
     public Image BackHealth;
+
+    [Header("Health Settings")]
     public float maxHealth = 500f;
-    private float health;
-    private float lerpTimer;
+    public float regenRate = 10f;
+    public float regenDelay = 3f;
     public float delaySpeed = 2f;
+
+    private float health;
+    private float visualHealth; // Separate value for visual movement
+    private float timeSinceLastDamage;
+
     void Start()
     {
         health = maxHealth;
+        visualHealth = maxHealth;
+        UpdateHealthUI();
     }
 
     void Update()
     {
         health = Mathf.Clamp(health, 0, maxHealth);
-        UpdateHealthBar();
 
-        if(Input.GetKeyDown(KeyCode.Q))
+        // Handle regeneration
+        if (timeSinceLastDamage < regenDelay)
         {
-            TakeDamage(UnityEngine.Random.Range(0, 10));
+            timeSinceLastDamage += Time.deltaTime;
         }
-        if(Input.GetKeyDown(KeyCode.E))
+        else if (health < maxHealth)
         {
-            Regenerate(UnityEngine.Random.Range(0, 10));
+            health += regenRate * Time.deltaTime;
         }
+
+        // Smooth visual health transition
+        visualHealth = Mathf.Lerp(visualHealth, health, Time.deltaTime * delaySpeed);
+
+        // Print health to the console
+        Debug.Log("Current Health: " + health);
+
+        // Update the health bar UI
+        UpdateHealthUI();
     }
-    public void UpdateHealthBar()
-    {
-        Debug.Log(health);
-       float fillFront = FrontHealth.fillAmount;
-       float fillBack = BackHealth.fillAmount;
-       float healthFraction = health / maxHealth;
 
-       if (fillBack > healthFraction /*condition on taking damage (to be changed)*/)
-       {
-        fillFront = healthFraction;
-        BackHealth.color = Color.red;
-        lerpTimer += Time.deltaTime;
-        float percentComplete = Mathf.Pow(lerpTimer * delaySpeed, 2);
-        fillBack = Mathf.Lerp(fillBack, healthFraction, percentComplete);
-       }
-
-       if (fillFront < healthFraction /*condition on shooting (to be changed)*/)
-       {
-        fillBack = healthFraction;
-        BackHealth.color = Color.cyan;
-        lerpTimer += Time.deltaTime;
-        float percentComplete = Mathf.Pow(lerpTimer * delaySpeed, 2);
-        fillFront = Mathf.Lerp(fillFront, fillBack, percentComplete);
-       }
-
-       FrontHealth.fillAmount = fillFront;
-       BackHealth.fillAmount  = fillBack;
-    }
     public void TakeDamage(float damage)
     {
         health -= damage;
-        lerpTimer = 0f;
+        timeSinceLastDamage = 0f;
+        health = Mathf.Max(health, 0);
     }
-    public void Regenerate(float recover)
+
+    void UpdateHealthUI()
     {
-        health += recover;
-        lerpTimer = 0f;
+        // Front bar shows the exaggerated movement
+        FrontHealth.fillAmount = visualHealth / maxHealth;
+
+        // Back bar shows actual health (optional - can remove if not needed)
+        BackHealth.fillAmount = health / maxHealth;
+
+        FrontHealth.color = health < maxHealth * 0.25f ? Color.red : Color.green;
     }
+
+    public bool IsDead => health <= 0;
 }
