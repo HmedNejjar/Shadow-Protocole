@@ -26,7 +26,8 @@ public class InputManager : MonoBehaviour
 
     void FixedUpdate()
     {
-        motor.MovProcess(onFoot.Movement.ReadValue<Vector2>(), isSprinting);
+        motor.MovProcess(new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")), Input.GetKey(KeyCode.LeftShift));
+
         Debug.Log("Sprinting: " + isSprinting);
 
     }
