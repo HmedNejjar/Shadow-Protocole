@@ -2,42 +2,19 @@ using UnityEngine;
 
 public class EnemyHealth : MonoBehaviour
 {
-    public float maxHealth = 100f;
-    private float currentHealth;
-
-    [Header("Optional Effects")]
-    public GameObject deathEffect;
-    public bool destroyOnDeath = true;
-    public float destroyDelay = 1f;
-
-    void Start()
+    public float health = 100f; // Enemy's starting health
+    
+    public void TakeDamage(float damage) // Method to handle enemy damage
     {
-        currentHealth = maxHealth;
-    }
-
-    public void TakeDamage(float amount)
-    {
-        currentHealth -= amount;
-        Debug.Log($"{gameObject.name} took {amount} damage, remaining: {currentHealth}");
-
-        if (currentHealth <= 0)
+        health -= damage; // Reduce enemy health by the given damage amount
+        if (health <= 0f) // Check if enemy health reaches zero or below
         {
-            Die();
+            Die(); // Call the Die method to handle enemy death
         }
     }
-
-    private void Die()
+    
+    public void Die() // Method to handle enemy death
     {
-        Debug.Log($"{gameObject.name} died!");
-
-        if (deathEffect != null)
-        {
-            Instantiate(deathEffect, transform.position, Quaternion.identity);
-        }
-
-        if (destroyOnDeath)
-        {
-            Destroy(gameObject, destroyDelay);
-        }
+        Destroy(gameObject); // Destroy the enemy object when it dies
     }
 }
