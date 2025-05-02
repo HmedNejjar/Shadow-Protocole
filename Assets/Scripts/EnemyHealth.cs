@@ -1,7 +1,9 @@
 using UnityEngine;
+using System;
 
 public class EnemyHealth : MonoBehaviour
 {
+    public static event Action OnEnemyKilled;
     public float health = 100f; // Enemy's starting health
     
     public void TakeDamage(float damage) // Method to handle enemy damage
@@ -12,9 +14,11 @@ public class EnemyHealth : MonoBehaviour
             Die(); // Call the Die method to handle enemy death
         }
     }
-    
-    public void Die() // Method to handle enemy death
-    {
-        Destroy(gameObject); // Destroy the enemy object when it dies
-    }
+
+    public void Die()
+{
+    Destroy(gameObject);
+    OnEnemyKilled?.Invoke();  // Notify the spawner
+}
+
 }

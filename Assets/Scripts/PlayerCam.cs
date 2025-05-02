@@ -7,7 +7,7 @@ public class PlayerCam : MonoBehaviour
     public float xSensitivity = 30f;
     public float ySensitivity = 30f;
     public float upperCamBound = 85f;
-    public float lowerCambound = -75f;
+    public float lowerCambound = -70f;
 
     public void ProcessCam(Vector2 input)
     {

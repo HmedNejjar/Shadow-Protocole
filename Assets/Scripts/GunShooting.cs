@@ -46,6 +46,7 @@ public class GunShooting : MonoBehaviour
 
     void Shoot()
     {
+        
         if (Time.time > nextFire)
         {
             nextFire = Time.time + FireRate;
@@ -58,13 +59,15 @@ public class GunShooting : MonoBehaviour
                 Destroy(effect, 0.3f);  // Destroy the explosion effect after 0.3 seconds
             }
 
+            Debug.DrawRay(FirePoint.position, FirePoint.forward * 100f, Color.red);
+
             // Raycast to detect hits
             if (Physics.Raycast(FirePoint.position, FirePoint.forward, out Hit, 100f))
             {
                 if (Hit.transform.CompareTag("Enemy"))
                 {
-                    // Apply damage to the enemy
-                    Hit.transform.GetComponent<EnemyHealth>().TakeDamage(WeaponDamage);
+                    Debug.Log("Hit enemy! Applying damage.");
+                    Hit.transform.GetComponentInParent<EnemyHealth>().TakeDamage(WeaponDamage);
                 }
             }
         }
