@@ -1,8 +1,14 @@
 using UnityEngine;
+using System.Collections;
+using TMPro;
+using UnityEngine.UI;
 
 public class GunShooting : MonoBehaviour
 {
     RaycastHit Hit;
+    [Header("UI Elements")]
+    [SerializeField]
+    private TextMeshProUGUI ammoText;  // Reference to the UI text element for ammo count
 
     public enum WeaponType { AK, Pistol }
     
@@ -14,7 +20,10 @@ public class GunShooting : MonoBehaviour
     private Transform FirePoint;  // Point where the bullets are fired
     
     [SerializeField]
-    private int currentAmmo;  // Ammo for the weapon
+    private int akAmmo = 30;  // Ammo for AK
+
+    [SerializeField]
+    private int pistolAmmo = 15;  // Ammo for Pistol
     
     [SerializeField]
     private float FireRate;  // Rate of fire for the weapon
@@ -29,46 +38,76 @@ public class GunShooting : MonoBehaviour
 
     void Update()
     {
+        // Update the ammo text UI
+        if (ammoText != null)
+        {
+            if (weaponType == WeaponType.AK)
+            {
+                ammoText.text = $"AK Ammo: {akAmmo}";
+            }
+            else if (weaponType == WeaponType.Pistol)
+            {
+                ammoText.text = $"Pistol Ammo: {pistolAmmo}";
+            }
+        }
+
+        // Shooting logic
         if (weaponType == WeaponType.AK)
         {
             // AK behavior: hold to shoot
-            if (Input.GetMouseButton(0) && currentAmmo > 0)
+            if (Input.GetMouseButton(0) && akAmmo > 0)
             {
-                Shoot();
+                ShootAK();
             }
         }
-        else if (weaponType == WeaponType.Pistol && Input.GetMouseButtonDown(0) && currentAmmo > 0)
+        else if (weaponType == WeaponType.Pistol)
         {
             // Pistol behavior: click to shoot
-            Shoot();
+            if (Input.GetMouseButtonDown(0) && pistolAmmo > 0)
+            {
+                ShootPistol();
+            }
         }
     }
 
-    void Shoot()
+    void ShootAK()
     {
-        
         if (Time.time > nextFire)
         {
             nextFire = Time.time + FireRate;
-            currentAmmo--;  // Decrease ammo on each shot
+            akAmmo--;  // Decrease AK ammo
+            HandleShooting();
+        }
+    }
 
-            // Instantiate explosion effect at the fire point
-            if (explosionEffect != null)
+    void ShootPistol()
+    {
+        if (Time.time > nextFire)
+        {
+            nextFire = Time.time + FireRate;
+            pistolAmmo--;  // Decrease Pistol ammo
+            HandleShooting();
+        }
+    }
+
+    void HandleShooting()
+    {
+        // Instantiate explosion effect at the fire point
+        if (explosionEffect != null)
+        {
+            GameObject effect = Instantiate(explosionEffect, FirePoint.position, Quaternion.identity);
+            Destroy(effect, 0.3f);  // Destroy the explosion effect after 0.3 seconds
+        }
+
+        Debug.DrawRay(FirePoint.position, FirePoint.forward * 100f, Color.red);
+
+        // Raycast to detect hits
+        if (Physics.Raycast(FirePoint.position, FirePoint.forward, out Hit, 100f))
+        {
+            if (Hit.transform.CompareTag("Enemy"))
             {
-                GameObject effect = Instantiate(explosionEffect, FirePoint.position, Quaternion.identity);
-                Destroy(effect, 0.3f);  // Destroy the explosion effect after 0.3 seconds
-            }
-
-            Debug.DrawRay(FirePoint.position, FirePoint.forward * 100f, Color.red);
-
-            // Raycast to detect hits
-            if (Physics.Raycast(FirePoint.position, FirePoint.forward, out Hit, 100f))
-            {
-                if (Hit.transform.CompareTag("Enemy"))
-                {
-                    Debug.Log("Hit enemy! Applying damage.");
-                    Hit.transform.GetComponentInParent<EnemyHealth>().TakeDamage(WeaponDamage);
-                }
+                Debug.Log("Hit enemy! Applying damage.");
+                Hit.transform.GetComponentInParent<EnemyHealth>().TakeDamage(WeaponDamage);
             }
         }
     }
