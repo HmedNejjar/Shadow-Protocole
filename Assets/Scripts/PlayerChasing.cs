@@ -1,9 +1,8 @@
-using UnityEngine; // Import Unity engine functionalities
-using UnityEngine.AI; // Import NavMeshAgent for pathfinding
+using UnityEngine;
+using UnityEngine.AI;
 
-public class PlayerChasing : MonoBehaviour // Class for enemy AI behavior
+public class PlayerChasing : MonoBehaviour
 {
-<<<<<<< Updated upstream
     public Transform player; // Reference to the player's transform
     private NavMeshAgent agent; // Reference to the NavMeshAgent component for pathfinding
     private bool canSeePlayer = true; // Tracks whether the enemy can see the player
@@ -21,31 +20,21 @@ public class PlayerChasing : MonoBehaviour // Class for enemy AI behavior
 
         GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
         if (playerObject != null)
-=======
-    private Transform player; // Reference to the player's Transform
-    private NavMeshAgent agent; // Reference to the NavMeshAgent component
-
-    void Start()
-    {
-        agent = GetComponent<NavMeshAgent>(); // Get the NavMeshAgent component attached to this GameObject
-        player = GameObject.FindGameObjectWithTag("Player")?.transform; // Find the player GameObject by its "Player" tag and get its Transform
-        if (player == null) // Check if the player was not found
->>>>>>> Stashed changes
         {
-            Debug.LogWarning("Player not found! Make sure your player has the 'Player' tag."); // Log a warning if no player is found
+            player = playerObject.transform;
+        }
+        else
+        {
+            Debug.LogWarning("Player object not found. Ensure the player has the 'Player' tag.");
         }
     }
 
     void Update()
     {
-<<<<<<< Updated upstream
         // Only set the destination if the player is visible
         if (player != null && canSeePlayer)
-=======
-        if (player != null) // Check if the player reference is valid
->>>>>>> Stashed changes
         {
-            agent.SetDestination(player.position); // Set the NavMeshAgent's destination to the player's position
+            agent.SetDestination(player.position);
         }
         
     }
