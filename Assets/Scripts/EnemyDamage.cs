@@ -3,44 +3,27 @@ using UnityEngine;
 public class EnemyDamage : MonoBehaviour
 {
     [Header("Damage Settings")]
-    public float damage = 30f;
-    public float attackCooldown = 1f;
-    public float attackRange = 1.5f;
-    
-    private float attackTimer;
-    private HealthUpdate playerHealth;
-    private Transform player;
+    public float damage = 20f; // Amount of damage the enemy deals to the player on touch
+    public float damageInterval = 1f; // Time interval (in seconds) between consecutive damage
 
-    void Start()
+    private float lastDamageTime = 0f; // Tracks the last time damage was dealt
+
+    private void OnTriggerStay(Collider other)
     {
-        player = GameObject.FindGameObjectWithTag("Player")?.transform;
-        if (player != null)
+        // Check if the object staying in the trigger is the player
+        if (other.CompareTag("Player"))
         {
-            playerHealth = player.GetComponent<HealthUpdate>();
-        }
-    }
-
-    void Update()
-    {
-        if (player == null || playerHealth == null || playerHealth.IsDead) 
-            return;
-
-        attackTimer += Time.deltaTime;
-
-        if (Vector3.Distance(transform.position, player.position) <= attackRange)
-        {
-            if (attackTimer >= attackCooldown)
+            HealthUpdate playerHealth = other.GetComponent<HealthUpdate>(); // Get the player's HealthUpdate component
+            if (playerHealth != null && !playerHealth.IsDead) // Ensure the player has health and is not already dead
             {
-                playerHealth.TakeDamage(damage);
-                attackTimer = 0f;
-                Debug.Log($"Dealt {damage} damage to player");
+                // Check if enough time has passed since the last damage
+                if (Time.time >= lastDamageTime + damageInterval)
+                {
+                    playerHealth.TakeDamage(damage); // Apply damage to the player
+                    lastDamageTime = Time.time; // Update the last damage time
+                    Debug.Log("Enemy dealt " + damage + " damage to Player."); // Log the damage dealt
+                }
             }
         }
-    }
-
-    void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }
