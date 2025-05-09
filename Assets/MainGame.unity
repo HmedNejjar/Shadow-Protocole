@@ -731,7 +731,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ebaeaf0a16d3c3478a74d210acd4068, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deathPanel: {fileID: 1501374998}
 --- !u!4 &181283033
 Transform:
   m_ObjectHideFlags: 0
@@ -8202,7 +8201,7 @@ MonoBehaviour:
   maxHealth: 100
   regenRate: 10
   regenDelay: 3
-  HealthText: {fileID: 0}
+  HealthText: {fileID: 223760638}
 --- !u!54 &8157515127337248850
 Rigidbody:
   m_ObjectHideFlags: 0
