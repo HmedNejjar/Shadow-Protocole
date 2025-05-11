@@ -3,46 +3,38 @@ using UnityEngine.SceneManagement;
 
 public class ExtractionZone : MonoBehaviour
 {
-    // UI element to display when the player wins
-    public GameObject winUI;
+    public GameObject winUI; // 🖥️ UI panel shown when the player wins
+    public AudioClip winSound; // 🔊 Sound clip to play when the player wins
+    public AudioSource audioSource; // 🎚️ Audio source to play the win sound
+    public AudioSource gameplayMusic; // 🎵 Reference to background music
 
-    // Audio clip to play when the player wins
-    public AudioClip winSound;
-
-    // Audio source to play the win sound
-    public AudioSource audioSource;
-
-    // Trigger event when another collider enters the extraction zone
     private void OnTriggerEnter(Collider other)
     {
-        // Check if the collider belongs to the player
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player")) // ✅ Check if the collider belongs to the player
         {
-            // Pause the game
-            Time.timeScale = 0f;
+            // Stop background music
+            if (gameplayMusic != null)
+            {
+                gameplayMusic.Stop(); // 🔇 Stop the music when player enters extraction zone
+            }
 
-            // Display the win UI
-            winUI.SetActive(true);
+            // Show Win UI and pause game
+            Time.timeScale = 0f; // ⏸️ Pause the game
+            winUI.SetActive(true); // 📺 Show the win screen
 
-            // Unlock and show the mouse cursor
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None; // 🖱️ Unlock the mouse cursor
+            Cursor.visible = true; // 👁️ Make the cursor visible
 
-            // Play the win sound if both the audio clip and source are assigned
             if (winSound != null && audioSource != null)
             {
-                audioSource.PlayOneShot(winSound);
+                audioSource.PlayOneShot(winSound); // 🔊 Play the win sound once
             }
         }
     }
 
-    // Method to restart the game by reloading the current scene
     public void RestartGame()
     {
-        // Resume the game time
-        Time.timeScale = 1f;
-
-        // Reload the current scene
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        Time.timeScale = 1f; // ▶️ Resume game time
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); // 🔁 Reload current scene
     }
 }
